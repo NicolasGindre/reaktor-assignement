@@ -1,0 +1,23 @@
+{
+  "name": "reaktor-assignement",
+  "version": "1.0.0",
+  "description": "This is the assignement for Reaktor",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicolasGindre/reaktor-assignement.git"
+  },
+  "author": "Nicolas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NicolasGindre/reaktor-assignement/issues"
+  },
+  "homepage": "https://github.com/NicolasGindre/reaktor-assignement#readme"
+}
