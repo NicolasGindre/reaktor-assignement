@@ -1,6 +1,7 @@
 const apiUrl = "https://bad-api-assignment.reaktor.com/"
 const productNode = document.getElementById("products")
 const spinnerNode = document.getElementById("spinner-container")
+const attributes = ["id", "type", "name", "color", "price", "manufacturer", "availability"]
 
 async function displayProducts(category) {
 
@@ -21,19 +22,11 @@ async function displayProducts(category) {
 	var productsHtml = new Array()
 	for (var i=0; i<products.length; i++){
 		productsHtml.push('<tr><td>')
-		productsHtml.push(products[i]["id"])
-		productsHtml.push('</td><td>')
-		productsHtml.push(products[i]["type"])
-		productsHtml.push('</td><td>')
-		productsHtml.push(products[i]["name"])
-		productsHtml.push('</td><td>')
-		productsHtml.push(products[i]["color"][0])
-		productsHtml.push('</td><td>')
-		productsHtml.push(products[i]["price"])
-		productsHtml.push('</td><td>')
-		productsHtml.push(products[i]["manufacturer"])
-		productsHtml.push('</td><td>')
-		productsHtml.push(products[i]["availability"])
+		for (var attribute of attributes) {
+			productsHtml.push(products[i][attribute])
+			productsHtml.push('</td><td>')
+		}
+		productsHtml.pop()
 		productsHtml.push('</td></tr>')
 	}
 	spinnerNode.classList.remove("loader");
@@ -61,6 +54,7 @@ async function mergeAvailabilityToProducts(products, manufacturers) {
 			o => o.id.toUpperCase() == products[i]["id"].toUpperCase()
 		)
 		products[i]["availability"] = getAvailability(availabilityObj)
+		products[i]["color"] = products[i]["color"][0]
 	}
 	return products
 }
