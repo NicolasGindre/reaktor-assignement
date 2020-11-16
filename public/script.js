@@ -7,30 +7,35 @@ async function displayProducts(category) {
 
 	productNode.innerHTML = ''
 	spinnerNode.classList.add("loader");
-	var products = await fetchProducts(category)
+	try{
+		var products = await fetchProducts(category)
 
-	var manufacturers = new Array()
-	for (var i=0; i<products.length; i++){
+		var manufacturers = new Array()
+		for (var i=0; i<products.length; i++){
 
-		var manufacturer = products[i]["manufacturer"]
-		if (!manufacturers.includes(manufacturer)) {
-			manufacturers.push(manufacturer)
+			var manufacturer = products[i]["manufacturer"]
+			if (!manufacturers.includes(manufacturer)) {
+				manufacturers.push(manufacturer)
+			}
 		}
+		products = await mergeAvailabilityToProducts(products, manufacturers)
+
+		var productsHtml = new Array()
+		for (var i=0; i<products.length; i++){
+			productsHtml.push('<tr><td>')
+			for (var attribute of attributes) {
+				productsHtml.push(products[i][attribute])
+				productsHtml.push('</td><td>')
+			}
+			productsHtml.pop()
+			productsHtml.push('</td></tr>')
+		}
+		productNode.innerHTML = productsHtml.join('')
 	}
-	products = await mergeAvailabilityToProducts(products, manufacturers)
-
-	var productsHtml = new Array()
-	for (var i=0; i<products.length; i++){
-		productsHtml.push('<tr><td>')
-		for (var attribute of attributes) {
-			productsHtml.push(products[i][attribute])
-			productsHtml.push('</td><td>')
-		}
-		productsHtml.pop()
-		productsHtml.push('</td></tr>')
+	catch(err) {
+		productNode.innerHTML = err
 	}
 	spinnerNode.classList.remove("loader");
-	productNode.innerHTML = productsHtml.join('')
 }
 
 async function mergeAvailabilityToProducts(products, manufacturers) {
