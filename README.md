@@ -9,7 +9,6 @@ The css for the table has been shamelessly copy pasted from the internet.
 The application should work with any modern browser. It can be accessed [here](https://reaktor-assignment-warehouse.herokuapp.com/).
 
 # Notes on The bad-api 
-
 Apart from the generally bad design of the api, there are two things that I noticed and were problematic when developing our app.
 
 - The product ID when GETting products is in lower case while the one when GETting availability is upper case. I simply made it all to upper case so that it can find the right product availability.
@@ -23,7 +22,7 @@ All the calls to the bad-api are made from the client. Doing it through our chea
 The bad-api answers slowly so we have to minimise the number of calls made to it, especially sequential ones. Unfortunately, we do not know the manufacturers used in our products before we first GET /products. This call is not the most time consuming though so we would only save about 100 ms if there was a way to know the manufacturers beforehand.
 Once we know our manufacturers, we can then GET each manufacturer availability. All the calls to /availability are made in parallel so that the waiting time is minimal.
 
-The data returned by the bad-api is quite big, up to almost 1MB for some requests. So we need to be efficient when displaying it.
+The data returned by the bad-api is quite big, up to almost 1MB for some requests. Even though the main blocking point are the calls to /availability, we need to be efficient when displaying the HTML table.
 
 We made a loop over the data that is concatenating the HTML (to be rendered) in an array of strings, and only when we are finished looping over the data we join all the concatenated strings into a big string and set it as HTML in our table. This should be the fastest way of displaying our data as HTML.
 
