@@ -1,5 +1,5 @@
 # reaktor-assignment
-This is my solution to the Reaktor assignment about the warehouse application.
+This is my solution to the [Reaktor assignment](https://www.reaktor.com/junior-dev-assignment/) about the warehouse facility.
 
 I tried to keep it as minimal as possible. The only required dependency are node and express.js.
 
