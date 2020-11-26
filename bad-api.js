@@ -1,19 +1,27 @@
 const NodeCache = require("node-cache")
-const myCache = new NodeCache({ stdTTL: 300 })
+// const myCache = new NodeCache({ stdTTL: 0, checkperiod: 0, useClones: true })
+const myCache = new NodeCache()
 
 const axios = require("axios")
 const xmlParser = require('fast-xml-parser')
 
-const apiUrl = "https://bad-api-assignment.reaktor.com/"
+const badApiUrl = "https://bad-api-assignment.reaktor.com/"
 
 module.exports = {
-	getProducts: async function(category) {
+	refreshCache: async function() {
+		console.log("Refreshing cash...")
+		await module.exports.getProducts("shirts", true)
+		await module.exports.getProducts("jackets", true)
+		await module.exports.getProducts("accessories", true)
+		console.log("Cash refreshed ! I'm rich !!")
+	},
+
+	getProducts: async function(category, flushCache=false) {
 		var products = myCache.get('CAT_'+ category)
-		if (products == undefined){
-			products = await fetchProducts(category)
-		} else {
+		if (products != undefined && !flushCache){
 			return products
 		}
+		products = await fetchProducts(category)
 
 		var manufacturers = new Array()
 		for (var i=0; i<products.length; i++){
@@ -23,55 +31,64 @@ module.exports = {
 				manufacturers.push(manufacturer)
 			}
 		}
-		var {products, api_error} = await mergeAvailabilityToProducts(products, manufacturers)
-		if (!api_error) {
-			myCache.set('CAT_'+ category, products)
-		}
+		var availabilities = await getAvailabilities(manufacturers)
+		var products = await mergeAvailabilityToProducts(products, manufacturers, availabilities)
+		myCache.set('CAT_'+ category, products)
 		return products
 	}
 }
 
-async function mergeAvailabilityToProducts(products, manufacturers) {
+async function getAvailabilities(manufacturers) {
 
-	var {availabilities, api_error} = await getAvailabilities(manufacturers)
+	var promises = manufacturers.map(async manufacturer => {
 
+		var manufacturerAvailability = myCache.get('MAN_'+ manufacturer)
+		if (manufacturerAvailability != undefined){
+			console.log("cache was used for availability of "+ manufacturer)
+			return manufacturerAvailability
+		}
+		manufacturerAvailability = await fetchAvailability(manufacturer, 5)
+		myCache.set('MAN_'+ manufacturer, manufacturerAvailability, 30)
+		return manufacturerAvailability
+	})
+
+	var availabilities = await Promise.all(promises)
+	return availabilities
+}
+
+async function fetchAvailability(manufacturer, triesLeft=0) {
+
+	var response = await axios.get(badApiUrl +"availability/"+ manufacturer)
+	var responseJson = response.data
+	manufacturerAvailability = responseJson["response"]
+	if (!Array.isArray(manufacturerAvailability)) {
+		if (triesLeft > 0) {
+			console.log("bad-api did not return an array. Retrying... ("
+				+ triesLeft +" left, "+ manufacturer +")")
+			return await fetchAvailability(manufacturer, triesLeft-1)
+		} else {
+			console.log("bad-api did not return what was expected after "+ triesLeft +" tries.")
+			return []
+		}
+	}
+	console.log("bad-api successfully returned availability from "+ manufacturer)
+	return manufacturerAvailability
+}
+
+async function mergeAvailabilityToProducts(products, manufacturers, availabilities) {
 	for (var i = 0; i < products.length; i++) {
 		var manufacturerIndex = manufacturers.indexOf(products[i]["manufacturer"])
 		var manufacturerAvailability = availabilities[manufacturerIndex]
 		var availabilityObj = manufacturerAvailability.find(
 			o => o.id.toUpperCase() == products[i]["id"].toUpperCase()
 		)
-		products[i]["availability"] = getAvailability(availabilityObj)
+		products[i]["availability"] = parseAvailability(availabilityObj)
 		products[i]["color"] = products[i]["color"][0]
 	}
-	return {products, api_error}
+	return products
 }
 
-async function getAvailabilities(manufacturers) {
-
-	var api_error = false
-	var promises = manufacturers.map(async manufacturer => {
-		var manufacturerAvailability = myCache.get('MAN_'+ manufacturer)
-		if (manufacturerAvailability != undefined){
-			return manufacturerAvailability
-		}
-		var response = await axios.get(apiUrl +"availability/"+ manufacturer)
-		var responseJson = response.data
-		manufacturerAvailability = responseJson["response"]
-		if (!Array.isArray(manufacturerAvailability)) {
-			console.log("bad-api did not return what was expected.")
-			api_error = true
-			return []
-		}
-		myCache.set('MAN_'+ manufacturer, manufacturerAvailability)
-		return manufacturerAvailability
-	})
-
-	var availabilities = await Promise.all(promises)
-	return {availabilities, api_error}
-}
-
-function getAvailability(availabilityObj) {
+function parseAvailability(availabilityObj) {
 
 	try {
 		var jsonAvail = xmlParser.parse(availabilityObj["DATAPAYLOAD"])
@@ -83,7 +100,7 @@ function getAvailability(availabilityObj) {
 }
 
 async function fetchProducts(category) {
-	var response = await axios.get(apiUrl +"products/"+ category)
+	var response = await axios.get(badApiUrl +"products/"+ category)
 	var products = response.data
 	return products
 }

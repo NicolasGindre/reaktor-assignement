@@ -1,7 +1,7 @@
 # reaktor-assignment
 This is my solution to the Reaktor assignment about the warehouse application.
 
-I tried to keep it as minimal as possible. The only required dependency are node and express.js.
+I tried to keep it as minimal as possible. The required dependencies are node, express.js, node-cache, axios and fast-xml-parser.
 
 On the client there are no framework or librairies. Only pure javascript.
 The css for the table has been shamelessly copy pasted from the internet.
@@ -17,10 +17,12 @@ Apart from the generally bad design of the api, there are two things that I noti
 
 # Performances considerations
 We went for a single page application solution for simplicity and slightly better performances.
-All the calls to the bad-api are made from the client. Doing it through our cheap server would impact performances negatively.
+The client is calling the server which is then calling the bad-api.
 
 The bad-api answers slowly so we have to minimise the number of calls made to it, especially sequential ones. Unfortunately, we do not know the manufacturers used in our products before we first GET /products. This call is not the most time consuming though so we would only save about 100 ms if there was a way to know the manufacturers beforehand.
 Once we know our manufacturers, we can then GET each manufacturer availability. All the calls to /availability are made in parallel so that the waiting time is minimal.
+
+Having the cache made the application much faster after the first request, as we could expect.
 
 The data returned by the bad-api is quite big, up to almost 1MB for some requests. Even though the main blocking point are the calls to /availability, we need to be efficient when displaying the HTML table.
 

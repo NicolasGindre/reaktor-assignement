@@ -24,3 +24,10 @@ app.get('/products/:category', async (req, res) => {
 app.listen(port, () => {
 	console.log(`listening on ${ port }`)
 })
+
+refreshCache()
+setInterval(refreshCache, 20000)
+function refreshCache()
+{
+	bad_api.refreshCache()
+}
