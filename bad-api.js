@@ -1,6 +1,6 @@
 const NodeCache = require("node-cache")
 const myCache = new NodeCache()
-const CACHE_TIMEOUT = 300
+// const CACHE_TIMEOUT = 300
 
 const axios = require("axios")
 const xmlParser = require('fast-xml-parser')
@@ -79,7 +79,6 @@ function getAvailability(availabilityObj) {
 		var availability = jsonAvail["AVAILABILITY"]["INSTOCKVALUE"]
 		return availability
 	} catch(err) {
-		// console.log(err)
 		return "unknown"
 	}
 }
