@@ -1,6 +1,5 @@
 const NodeCache = require("node-cache")
-const myCache = new NodeCache()
-// const CACHE_TIMEOUT = 300
+const myCache = new NodeCache({ stdTTL: 300 })
 
 const axios = require("axios")
 const xmlParser = require('fast-xml-parser')
