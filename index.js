@@ -26,7 +26,7 @@ app.listen(port, () => {
 })
 
 refreshCache()
-setInterval(refreshCache, 20000)
+setInterval(refreshCache, 300000)
 function refreshCache()
 {
 	bad_api.refreshCache()
