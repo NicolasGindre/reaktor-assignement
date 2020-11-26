@@ -1,7 +1,8 @@
-const NodeCache = require( "node-cache" )
+const NodeCache = require("node-cache")
 const myCache = new NodeCache()
 
 const axios = require("axios")
+const xmlParser = require('fast-xml-parser')
 
 const apiUrl = "https://bad-api-assignment.reaktor.com/"
 
@@ -29,6 +30,7 @@ async function mergeAvailabilityToProducts(products, manufacturers) {
 		var responseJson = response.data
 		var manufacturerAvailability = responseJson["response"]
 		if (!Array.isArray(manufacturerAvailability)) {
+			console.log("bad-api did not return what was expected.")
 			return []
 		}
 		return manufacturerAvailability
@@ -51,11 +53,11 @@ async function mergeAvailabilityToProducts(products, manufacturers) {
 function getAvailability(availabilityObj) {
 
 	try {
-		var parser = new DOMParser()
-		var availabilityXML = parser.parseFromString(availabilityObj["DATAPAYLOAD"], 'text/xml')
-		return availabilityXML.getElementsByTagName("INSTOCKVALUE")[0].childNodes[0].nodeValue
-	}
-	catch(err) {
+		var jsonAvail = xmlParser.parse(availabilityObj["DATAPAYLOAD"])
+		var availability = jsonAvail["AVAILABILITY"]["INSTOCKVALUE"]
+		return availability
+	} catch(err) {
+		console.log(err)
 		return "unknown"
 	}
 }
