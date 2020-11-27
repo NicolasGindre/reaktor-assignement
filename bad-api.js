@@ -1,6 +1,5 @@
 const NodeCache = require("node-cache")
-// const myCache = new NodeCache({ stdTTL: 0, checkperiod: 0, useClones: true })
-const myCache = new NodeCache()
+const myCache = new NodeCache({ stdTTL: 0, checkperiod: 0, useClones: false })
 
 const axios = require("axios")
 const xmlParser = require('fast-xml-parser')
@@ -11,8 +10,12 @@ module.exports = {
 	refreshCache: async function() {
 		console.log("Refreshing cash...")
 		await module.exports.getProducts("shirts", true)
-		await module.exports.getProducts("jackets", true)
-		await module.exports.getProducts("accessories", true)
+		// Here it is actually better to await the first request instead of doing a parallel
+		// request because we want to use the availability data stored in the cache.
+		var promises = ["jackets", "accessories"].map(async category => {
+			return module.exports.getProducts(category, true)
+		})
+		var allProducts = await Promise.all(promises)
 		console.log("Cash refreshed ! I'm rich !!")
 	},
 
@@ -48,7 +51,7 @@ async function getAvailabilities(manufacturers) {
 			return manufacturerAvailability
 		}
 		manufacturerAvailability = await fetchAvailability(manufacturer, 5)
-		myCache.set('MAN_'+ manufacturer, manufacturerAvailability, 30)
+		myCache.set('MAN_'+ manufacturer, manufacturerAvailability, 200)
 		return manufacturerAvailability
 	})
 
