@@ -1,16 +1,16 @@
-const express = require('express')
+const express = require("express")
 const app = express()
-const path = require('path')
+const path = require("path")
 const port = process.env.PORT || 3000
 
-const bad_api = require('./bad-api')
+const bad_api = require("./bad-api")
 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, "public")))
 
-app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname + '/index.html'))
+app.get("/", (req, res) => {
+	res.sendFile(path.join(__dirname + "/index.html"))
 })
-app.get('/products/:category', async (req, res) => {
+app.get("/products/:category", async (req, res) => {
 	try {
 		var category = req.params.category
 		var products = await bad_api.getProducts(category)
@@ -26,7 +26,8 @@ app.listen(port, () => {
 })
 
 refreshCache()
-setInterval(refreshCache, 300000)
+// setInterval(refreshCache, 300000)
+setInterval(refreshCache, 20000)
 function refreshCache()
 {
 	bad_api.refreshCache()

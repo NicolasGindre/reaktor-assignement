@@ -1,5 +1,5 @@
-// const apiUrl = "http://localhost:3000/"
-const apiUrl = "https://reaktor-assignment-warehouse.herokuapp.com/"
+const apiUrl = "http://localhost:3000/"
+// const apiUrl = "https://reaktor-assignment-warehouse.herokuapp.com/"
 const productNode = document.getElementById("products")
 const spinnerNode = document.getElementById("spinner-container")
 
@@ -9,13 +9,13 @@ async function displayProducts(category) {
 	spinnerNode.classList.add("loader");
 
 	products = await fetchProducts(category)
-	var productsHtml = new Array()
+	let productsHtml = new Array()
 	if (products["err"] != null) {
 		productsHtml.push(products["err"])
 	} else {
-		for (var i=0; i<products.length; i++){
+		for (let i=0; i<products.length; i++){
 			productsHtml.push('<tr><td>')
-			for (var attribute in products[i]) {
+			for (let attribute in products[i]) {
 				productsHtml.push(products[i][attribute])
 				productsHtml.push('</td><td>')
 			}
@@ -29,7 +29,7 @@ async function displayProducts(category) {
 }
 
 async function fetchProducts(category) {
-	var response = await fetch(apiUrl +"products/"+ category)
-	var products = await response.json()
+	let response = await fetch(apiUrl +"products/"+ category)
+	let products = await response.json()
 	return products
 }

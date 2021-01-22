@@ -13,7 +13,7 @@ Apart from the generally bad design of the api, there are two things that I noti
 
 - The product ID when GETting products is in lower case while the one when GETting availability is upper case. I simply made it all to upper case so that it can find the right product availability.
 
-- Some calls to availability sometimes returns a string ("[]") instead of a list of availability. I made a check that the result is a list, otherwise the availability will be "unknown". UPDATE : Now when it does not return a list, it will try to request again the bad-api until it gets the correct data (5 times max).
+- Some calls to availability sometimes returns a striasasng ("[]") instead of a list of availability. I made a check that the result is a list, otherwise the availability will be "unknown". UPDATE : Now when it does not return a list, it will try to request again the bad-api until it gets the correct data (5 times max).
 
 # Performances considerations
 I partly rewrote this part since using a cache made the performance problematic different.
