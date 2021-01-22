@@ -12,8 +12,8 @@ app.get("/", (req, res) => {
 })
 app.get("/products/:category", async (req, res) => {
 	try {
-		var category = req.params.category
-		var products = await bad_api.getProducts(category)
+		let category = req.params.category
+		let products = await bad_api.getProducts(category)
 		res.json(products)
 	} catch(err) {
 		console.log(err)
@@ -26,8 +26,8 @@ app.listen(port, () => {
 })
 
 refreshCache()
-// setInterval(refreshCache, 300000)
-setInterval(refreshCache, 20000)
+setInterval(refreshCache, 300000)
+// setInterval(refreshCache, 20000)
 function refreshCache()
 {
 	bad_api.refreshCache()

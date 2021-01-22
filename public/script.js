@@ -1,5 +1,5 @@
-const apiUrl = "http://localhost:3000/"
-// const apiUrl = "https://reaktor-assignment-warehouse.herokuapp.com/"
+// const apiUrl = "http://localhost:3000/"
+const apiUrl = "https://reaktor-assignment-warehouse.herokuapp.com/"
 const productNode = document.getElementById("products")
 const spinnerNode = document.getElementById("spinner-container")
 
